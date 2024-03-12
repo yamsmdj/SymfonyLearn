@@ -7,10 +7,11 @@ use App\Service\TestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ProductController extends AbstractController
+class TestController extends AbstractController
 {
 
     private SerializerInterface $serializer;
@@ -23,10 +24,22 @@ class ProductController extends AbstractController
     }
 
 
-    #[Route('api/product', name: 'create_product', methods: ['POST'])]
+    #[Route('/api/products', methods: ['POST'])]
 
-    public function new(): Response
+    public function new(#[MapRequestPayload()] Test $test): Response
     {
-        return new Response($this->serializer->serialize($this->testService->createProduct(), 'json'));
+        return new Response($this->serializer->serialize($this->testService->createProduct($test), 'json'));
+    }
+
+    #[Route('api/products' , methods: ['GET'])]
+    public function getAll(): Response
+    {
+        return new Response($this->serializer->serialize($this->testService->getAll(), 'json'));
+    }
+
+    #[Route('api/products/{id}', methods:['GET'])]
+    public function get(int $id): Response
+    {
+        return new Response($this->serializer->serialize($this->testService->get($id), 'json'));
     }
 }
